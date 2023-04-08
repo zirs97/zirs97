@@ -151,13 +151,6 @@ data_ = np.swapaxes(data_, 1,2) #(1280, 12, 8064)
 
 y = np.load('/Users/zirs/Desktop/SAE/data/label.npy') #(1280,1)
 y2 = np.load('/Users/zirs/Desktop/SAE/data/label_s2.npy') # 二分类
-#y2 = y2.flatten()
-#y =  y.reshape((-1,1)) #(1280, 1)
-# # 时序数据标准化
-# mean = np.mean(data_, axis=(0,2), keepdims=True)
-# std = np.std(data_,axis=(0,2), keepdims=True)
-# data_ = (data_-mean)/std
-
 
 
 datalist, labellist= [],[]
