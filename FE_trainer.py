@@ -7,23 +7,26 @@ from torch.utils.tensorboard import SummaryWriter
 import time
 import tqdm
 from utils.dataprocess import K_fold
+from utils.misc import Timer
+from models.feature_extractor import FeatureExtractor
 
 class FEtrainer(object):
     def __init__(self, args):
+        # code for args
         self.args = args
-        args.save_path = os.path.join(self.args.base_save_dir,)
-        if not os.path.exists(args.save_path):
-            os.makedirs(args.save_path)
-        self.outputs_eval_file = os.path.join(args.save_path, time.shrftime("%m%d%H%M")+"eval_results.txt")
+        if not os.path.exists(args.base_save_path):
+            os.makedirs(args.base_save_path)
+        self.outputs_eval_file = os.path.join(args.base_save_path, time.strftime("%m%d%H%M")+"eval_results.txt")
 
         print("perparing dataset loader")
-        self.train_loader = args.trainloader
-        self.val_loader = args.valloader
-        self.model = args.model
+        # read data and process data
+        self.data_path = args.data_path
+        self.data, self.label = np.load(self.data_path+self.args.data_dir), np.load(self.data_path+self.args.label_dir)
+        self.train_loader, self.val_loader = K_fold(n_splits=self.args.n_splits,data=self.data,label=self.label,batch_size=self.args.batch_size)
+        self.model = FeatureExtractor(self.args.num_class)
         self.optimizer = torch.optim.Adam(self.model.parameters(),lr=self.args.lr)
         self.loss = torch.nn.CrossEntropyLoss()
     
-
     def save_model(self, name):
         torch.save(dict(params=self.model.state_dict()), os.path.join(self.args.save_path, name+'.pth'))
     
@@ -38,8 +41,9 @@ class FEtrainer(object):
         trlog['max_acc'] = 0.0
         trlog['max_acc_epoch'] = 0
         
+        timer = Timer()
         global_count = 0
-        writer = SummaryWriter(comment=self.args.save_path)
+        writer = SummaryWriter(comment=self.args.base_save_path)
         for epoch in range(1,self.args.num_epochs+1):
             start_time = time.time()
             self.model.train()
@@ -76,7 +80,7 @@ class FEtrainer(object):
             val_acc_averager = Averager()
             for iter,batch in enumerate(self.val_loader,1):
                 X, y = batch
-                pred = self.model(X)
+                pred,fea = self.model(X)
                 target = torch.argmax(pred , dim=1)
                 l = self.loss(pred,y)
                 acc = (target==y).sum().item()

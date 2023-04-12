@@ -43,6 +43,7 @@ def label_pre(label, num_class:int, dir:str):
     label = label.flatten() #(1280,)
     np.save(dir, label)
 
+
 # 生成dataset类
 class MyDataset(Dataset):
     '''

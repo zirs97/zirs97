@@ -296,4 +296,4 @@ def train_fold(dataset,num_epoch, num_class):
            
 
 #train_fold(dataset=dataset_s2,num_epoch=200, num_class=2)
-train_fold(dataset=dataset,num_epoch=200, num_class=3)
+# train_fold(dataset=dataset,num_epoch=200, num_class=3)

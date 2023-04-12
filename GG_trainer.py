@@ -77,6 +77,6 @@ class GGtrainer(object):
             val_loss_averager = val_loss_averager.item()
             write.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             
-            if epoch%10 == 0:
-                print('epoch: %d,train_loss: %.3f'%(epoch,train_loss/len(batch)))
-            return train_loss/len(batch)
+            # if epoch%10 == 0:
+            #     print('epoch: %d,train_loss: %.3f'%(epoch,train_loss/len(batch)))
+            # return train_loss/len(batch)
