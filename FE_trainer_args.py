@@ -11,7 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=2023)
     parser.add_argument('--n_splits', type=int,default=5)
     parser.add_argument('--batch_size',type=int,default=32)
-    parser.add_argument('--lr',type=float,default=1e-5)
+    parser.add_argument('--lr',type=float,default=1e-3)
     parser.add_argument('--num_epochs', type=int, default=100)
     parser.add_argument('--num_class', type=int, default=3,choices=[2,3])
    

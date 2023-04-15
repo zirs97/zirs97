@@ -5,16 +5,8 @@ import torch.nn.functional as F
 
 class FeatureExtractor(nn.Module):
     def __init__(self,num_class, channels=12, time_second = 63, freq = 128 ):
-        # 输入数据shape 每个受试者的每个视频作为一条数据输入 （通道数， 时序， 1） (32, 8024, 1)
+        # 输入数据shape 每个受试者的每个视频作为一条数据输入 （通道数， 时序， 1） (12, 8024, 1)
         super(FeatureExtractor, self).__init__()
-    ######### CNNs with small filter size at the first layer 
-    # Small convolution kernel is better at capturing temporal information
-        # self.input_signal = nn.Sequential(
-        #         nn.Conv1d(in_channels=channels, out_channels=32, kernel_size=50, stride=6),
-        #         nn.BatchNorm1d(32),
-        #         nn.ReLU()
-        #     )
-
         self.cnn_s = nn.Sequential(
             nn.Conv1d(in_channels=channels,
                       out_channels=32,
@@ -118,16 +110,16 @@ class FeatureExtractor(nn.Module):
     def forward(self, x):
         # x = self.input_signal(x)
         x = x.to(torch.float32) #(32,32,8064)
-        s = self.cnn_s(x) #(32,640)
-        s = self.cnn_s1(s)
-        s = self.cnn_s2(s)
-        s = self.cnn_s3(s)
-        s = self.cnn_sMF(s)
-        l = self.cnn_l(x) #(32,256)
-        l = self.cnn_l1(l)
-        l = self.cnn_l2(l)
-        l = self.cnn_l3(l)
-        l = self.cnn_lMF(l)
+        s = self.cnn_s(x) #(32,32,83)
+        s = self.cnn_s1(s) # (32,64,83)
+        s = self.cnn_s2(s) # (32,64,83)
+        s = self.cnn_s3(s) # (32,64,83)
+        s = self.cnn_sMF(s) # （32，640）
+        l = self.cnn_l(x) #(32,64,19)
+        l = self.cnn_l1(l) #(32,64,19)
+        l = self.cnn_l2(l) #(32,64,19)
+        l = self.cnn_l3(l) #(32,64,19)
+        l = self.cnn_lMF(l) #(32,256)
         feature=torch.cat([s,l],dim=1) #(32,896)
         out = self.fc(feature)
         return out, feature #out是分类结果 feature是学习到的特征
